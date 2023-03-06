@@ -2855,7 +2855,12 @@ IRECV_API irecv_error_t irecv_send_buffer(irecv_client_t client, unsigned char* 
 			debug("Sent: %d bytes - %lu of %lu\n", bytes, count, length);
 		}
 	}
-
+	
+	if (recovery_mode) {
+		bytes = 0;
+		irecv_usb_bulk_transfer(client, 0x04, &buffer[length], 0, &bytes, 100);
+	}
+	
 	if (dfu_notify_finished && !recovery_mode) {
 		irecv_usb_control_transfer(client, 0x21, 1, packets, 0, (unsigned char*) buffer, 0, USB_TIMEOUT);
 
